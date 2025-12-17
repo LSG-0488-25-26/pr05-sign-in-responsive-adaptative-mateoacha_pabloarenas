@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ResponsiveTheme {
-                val windowSizeClass = calculateWindowSizeClass(this)
+                val windowSizeClass = calculateWindowSizeClass(activity = this@MainActivity)
                 val navController = rememberNavController()
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
