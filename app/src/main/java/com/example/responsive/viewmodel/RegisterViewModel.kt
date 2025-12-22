@@ -28,6 +28,9 @@ class RegisterViewModel : ViewModel() {
     private val _confirmPasswordError = MutableLiveData<String?>()
     val confirmPasswordError: LiveData<String?> = _confirmPasswordError
     
+    private val _fechaNacimientoError = MutableLiveData<String?>()
+    val fechaNacimientoError: LiveData<String?> = _fechaNacimientoError
+    
     private val _terminosError = MutableLiveData<String?>()
     val terminosError: LiveData<String?> = _terminosError
     
@@ -41,6 +44,7 @@ class RegisterViewModel : ViewModel() {
     
     fun updateFechaNacimiento(fecha: String) {
         _user.value = _user.value?.copy(fechaNacimiento = fecha)
+        validateFechaNacimiento(fecha)
     }
     
     fun updateEmail(email: String) {
@@ -137,10 +141,34 @@ class RegisterViewModel : ViewModel() {
         validateForm()
     }
     
+    private fun validateFechaNacimiento(fecha: String) {
+        _fechaNacimientoError.value = when {
+            fecha.isBlank() -> "La fecha de nacimiento es obligatoria"
+            !fecha.matches(Regex("^\\d{2}/\\d{2}/\\d{4}$")) -> "Formato debe ser DD/MM/YYYY"
+            else -> {
+                // Validar que sea una fecha válida
+                val parts = fecha.split("/")
+                val day = parts[0].toIntOrNull()
+                val month = parts[1].toIntOrNull()
+                val year = parts[2].toIntOrNull()
+                
+                when {
+                    day == null || month == null || year == null -> "Fecha inválida"
+                    month !in 1..12 -> "El mes debe estar entre 01 y 12"
+                    day !in 1..31 -> "El día debe estar entre 01 y 31"
+                    year < 1900 || year > 2024 -> "Año no válido"
+                    else -> null
+                }
+            }
+        }
+        validateForm()
+    }
+    
     private fun validateForm() {
         val user = _user.value ?: return
         _isFormValid.value = 
             _nombreCompletoError.value == null &&
+            _fechaNacimientoError.value == null &&
             _emailError.value == null &&
             _telefonoError.value == null &&
             _nombreUsuarioError.value == null &&
@@ -148,6 +176,7 @@ class RegisterViewModel : ViewModel() {
             _confirmPasswordError.value == null &&
             _terminosError.value == null &&
             user.nombreCompleto.isNotBlank() &&
+            user.fechaNacimiento.isNotBlank() &&
             user.email.isNotBlank() &&
             user.telefono.isNotBlank() &&
             user.nombreUsuario.isNotBlank() &&
