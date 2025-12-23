@@ -29,13 +29,9 @@ fun RegisterScreen(
     val isMedium = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Medium
     val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
     
-    val maxWidth = when {
-        isExpanded -> 600.dp
-        isMedium -> 500.dp
-        else -> null
-    }
     val user by viewModel.user.collectAsStateWithLifecycle()
     val nombreCompletoError by viewModel.nombreCompletoError.collectAsStateWithLifecycle()
+    val fechaNacimientoError by viewModel.fechaNacimientoError.collectAsStateWithLifecycle()
     val emailError by viewModel.emailError.collectAsStateWithLifecycle()
     val telefonoError by viewModel.telefonoError.collectAsStateWithLifecycle()
     val nombreUsuarioError by viewModel.nombreUsuarioError.collectAsStateWithLifecycle()
@@ -45,16 +41,33 @@ fun RegisterScreen(
     val isFormValid by viewModel.isFormValid.collectAsStateWithLifecycle()
     
     val scrollState = rememberScrollState()
-    val padding = if (isCompact) 12.dp else 16.dp
-    val spacing = if (isCompact) 6.dp else 8.dp
     
-    Box(
+    // Uso de BoxWithConstraints para diseño responsive (según teoría)
+    BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        val maxWidth = when {
+            maxWidth > 840.dp -> 600.dp  // Expanded
+            maxWidth > 600.dp -> 500.dp  // Medium
+            else -> maxWidth              // Compact - usa todo el ancho
+        }
+        
+        val padding = when {
+            maxWidth > 840.dp -> 24.dp
+            maxWidth > 600.dp -> 16.dp
+            else -> 12.dp
+        }
+        
+        val spacing = when {
+            maxWidth > 600.dp -> 8.dp
+            else -> 6.dp
+        }
+        
         Column(
             modifier = Modifier
-                .then(if (maxWidth != null) Modifier.widthIn(max = maxWidth) else Modifier.fillMaxWidth())
+                .widthIn(max = maxWidth)
+                .fillMaxWidth()
                 .verticalScroll(scrollState)
                 .padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -78,6 +91,8 @@ fun RegisterScreen(
                 value = user.fechaNacimiento,
                 onValueChange = { viewModel.updateFechaNacimiento(it) },
                 label = { Text(if (isCompact) "Fecha (DD/MM/YYYY)" else "Fecha de nacimiento (DD/MM/YYYY)") },
+                isError = fechaNacimientoError != null,
+                supportingText = fechaNacimientoError?.let { { Text(it) } },
                 modifier = Modifier.fillMaxWidth()
             )
             
