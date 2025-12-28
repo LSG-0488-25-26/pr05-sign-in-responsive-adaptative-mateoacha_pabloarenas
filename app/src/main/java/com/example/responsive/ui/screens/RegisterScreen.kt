@@ -27,9 +27,10 @@ fun RegisterScreen(
     viewModel: RegisterViewModel = viewModel(),
     onNavigateToConfirm: () -> Unit
 ) {
-    val isCompact = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-    val isMedium = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Medium
-    val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
+    val widthSizeClass = windowSizeClass.widthSizeClass
+    val isCompact = remember(widthSizeClass) { widthSizeClass == WindowWidthSizeClass.Compact }
+    val isMedium = remember(widthSizeClass) { widthSizeClass == WindowWidthSizeClass.Medium }
+    val isExpanded = remember(widthSizeClass) { widthSizeClass == WindowWidthSizeClass.Expanded }
     
     val user by viewModel.user.observeAsState(User())
     val nombreCompletoError by viewModel.nombreCompletoError.observeAsState()
@@ -43,13 +44,17 @@ fun RegisterScreen(
     val isFormValid by viewModel.isFormValid.observeAsState(false)
     
     val scrollState = rememberScrollState()
-    val maxWidth = when {
-        isExpanded -> 600.dp
-        isMedium -> 500.dp
-        else -> null
+    
+    val maxWidth = remember(isExpanded, isMedium) {
+        when {
+            isExpanded -> 600.dp
+            isMedium -> 500.dp
+            else -> null
+        }
     }
-    val padding = if (isCompact) 12.dp else 16.dp
-    val spacing = if (isCompact) 6.dp else 8.dp
+    
+    val padding = remember(isCompact) { if (isCompact) 12.dp else 16.dp }
+    val spacing = remember(isCompact) { if (isCompact) 6.dp else 8.dp }
     
     Box(
         modifier = Modifier.fillMaxSize(),

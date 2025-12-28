@@ -3,6 +3,7 @@ package com.example.responsive.ui.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -13,11 +14,13 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 
 @Composable
 fun Banner(windowSizeClass: WindowSizeClass) {
-    val isCompact = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-    val logoSize = if (isCompact) 36.sp else 48.sp
-    val titleSize = if (isCompact) 20.sp else 28.sp
-    val subtitleSize = if (isCompact) 12.sp else 14.sp
-    val padding = if (isCompact) 12.dp else 16.dp
+    val widthSizeClass = windowSizeClass.widthSizeClass
+    val isCompact = remember(widthSizeClass) { widthSizeClass == WindowWidthSizeClass.Compact }
+    
+    val logoSize = remember(isCompact) { if (isCompact) 36.sp else 48.sp }
+    val titleSize = remember(isCompact) { if (isCompact) 20.sp else 28.sp }
+    val subtitleSize = remember(isCompact) { if (isCompact) 12.sp else 14.sp }
+    val padding = remember(isCompact) { if (isCompact) 12.dp else 16.dp }
     
     Surface(
         modifier = Modifier.fillMaxWidth(),
