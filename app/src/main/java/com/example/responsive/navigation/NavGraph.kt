@@ -2,7 +2,7 @@ package com.example.responsive.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.window.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable

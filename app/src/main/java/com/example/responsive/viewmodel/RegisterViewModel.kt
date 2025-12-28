@@ -143,7 +143,7 @@ class RegisterViewModel : ViewModel() {
     
     private fun validateFechaNacimiento(fecha: String) {
         _fechaNacimientoError.value = when {
-            fecha.isBlank() -> "La fecha de nacimiento es obligatoria"
+            fecha.isBlank() -> null  // No es obligatorio para habilitar el botón
             !fecha.matches(Regex("^\\d{2}/\\d{2}/\\d{4}$")) -> "Formato debe ser DD/MM/YYYY"
             else -> {
                 // Validar que sea una fecha válida
@@ -156,7 +156,7 @@ class RegisterViewModel : ViewModel() {
                     day == null || month == null || year == null -> "Fecha inválida"
                     month !in 1..12 -> "El mes debe estar entre 01 y 12"
                     day !in 1..31 -> "El día debe estar entre 01 y 31"
-                    year < 1900 || year > 2024 -> "Año no válido"
+                    year < 1900 || year > 2100 -> "Año no válido"
                     else -> null
                 }
             }
@@ -176,7 +176,6 @@ class RegisterViewModel : ViewModel() {
             _confirmPasswordError.value == null &&
             _terminosError.value == null &&
             user.nombreCompleto.isNotBlank() &&
-            user.fechaNacimiento.isNotBlank() &&
             user.email.isNotBlank() &&
             user.telefono.isNotBlank() &&
             user.nombreUsuario.isNotBlank() &&

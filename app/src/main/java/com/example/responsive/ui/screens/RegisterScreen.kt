@@ -6,16 +6,18 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.WindowSizeClass
-import androidx.compose.ui.window.WindowWidthSizeClass
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.responsive.model.User
 import com.example.responsive.viewmodel.RegisterViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,45 +31,33 @@ fun RegisterScreen(
     val isMedium = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Medium
     val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
     
-    val user by viewModel.user.collectAsStateWithLifecycle()
-    val nombreCompletoError by viewModel.nombreCompletoError.collectAsStateWithLifecycle()
-    val fechaNacimientoError by viewModel.fechaNacimientoError.collectAsStateWithLifecycle()
-    val emailError by viewModel.emailError.collectAsStateWithLifecycle()
-    val telefonoError by viewModel.telefonoError.collectAsStateWithLifecycle()
-    val nombreUsuarioError by viewModel.nombreUsuarioError.collectAsStateWithLifecycle()
-    val passwordError by viewModel.passwordError.collectAsStateWithLifecycle()
-    val confirmPasswordError by viewModel.confirmPasswordError.collectAsStateWithLifecycle()
-    val terminosError by viewModel.terminosError.collectAsStateWithLifecycle()
-    val isFormValid by viewModel.isFormValid.collectAsStateWithLifecycle()
+    val user by viewModel.user.observeAsState(User())
+    val nombreCompletoError by viewModel.nombreCompletoError.observeAsState()
+    val fechaNacimientoError by viewModel.fechaNacimientoError.observeAsState()
+    val emailError by viewModel.emailError.observeAsState()
+    val telefonoError by viewModel.telefonoError.observeAsState()
+    val nombreUsuarioError by viewModel.nombreUsuarioError.observeAsState()
+    val passwordError by viewModel.passwordError.observeAsState()
+    val confirmPasswordError by viewModel.confirmPasswordError.observeAsState()
+    val terminosError by viewModel.terminosError.observeAsState()
+    val isFormValid by viewModel.isFormValid.observeAsState(false)
     
     val scrollState = rememberScrollState()
+    val maxWidth = when {
+        isExpanded -> 600.dp
+        isMedium -> 500.dp
+        else -> null
+    }
+    val padding = if (isCompact) 12.dp else 16.dp
+    val spacing = if (isCompact) 6.dp else 8.dp
     
-    // Uso de BoxWithConstraints para diseño responsive (según teoría)
-    BoxWithConstraints(
+    Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        val maxWidth = when {
-            maxWidth > 840.dp -> 600.dp  // Expanded
-            maxWidth > 600.dp -> 500.dp  // Medium
-            else -> maxWidth              // Compact - usa todo el ancho
-        }
-        
-        val padding = when {
-            maxWidth > 840.dp -> 24.dp
-            maxWidth > 600.dp -> 16.dp
-            else -> 12.dp
-        }
-        
-        val spacing = when {
-            maxWidth > 600.dp -> 8.dp
-            else -> 6.dp
-        }
-        
         Column(
             modifier = Modifier
-                .widthIn(max = maxWidth)
-                .fillMaxWidth()
+                .then(if (maxWidth != null) Modifier.widthIn(max = maxWidth) else Modifier.fillMaxWidth())
                 .verticalScroll(scrollState)
                 .padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally
